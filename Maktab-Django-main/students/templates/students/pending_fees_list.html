@@ -1,0 +1,122 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="card">
+    <h1>Pending Fees</h1>
+    {% if pending_students %}
+    <div class="student-list">
+        {% for item in pending_students %}
+        <div class="student-card" style="
+                        background-color: var(--accent-blue);
+                        margin-bottom: 15px;
+                        padding: 15px;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                        display: flex;
+                        align-items: center;
+                        flex-wrap: wrap;
+                        transition: transform 0.2s ease;
+                    ">
+            <div class="student-info" style="flex-grow: 1; text-align: left;">
+                <a href="{% url 'student_detail' item.student.roll_number %}"
+                    style="color: var(--text-light); text-decoration: none;">
+                    <h3
+                        style="margin: 0; font-size: 1.2em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;">
+                        Roll: {{ item.student.roll_number }} - {{ item.student.name }}</h3>
+                </a>
+                <p
+                    style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;">
+                    <strong>Fees Period:</strong> {{ item.student.get_fees_period_display }}</p>
+                <p
+                    style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;">
+                    <strong>Paid Till:</strong> {{ item.student.paid_till_date|date:"M d, Y" }}</p>
+                <p
+                    style="margin: 5px 0 0 0; font-size: 1.3em; color: var(--text-light); font-weight: bold; text-align: left; padding-left: 0; margin-left: 0;">
+                    <strong>Total Pending:</strong> ₹{{ item.pending_amount }}</p>
+            </div>
+            <div class="whatsapp-section">
+                {% if item.student.phone_number1 or item.student.phone_number2 %}
+                <button class="whatsapp-button" onclick="showPhoneNumberSelection(
+                                    '{{ item.student.phone_number1 }}',
+                                    '{{ item.student.phone_number2 }}',
+                                    '{{ item.student.name }}',
+                                    '{{ item.pending_periods }}',
+                                    '{{ item.pending_amount }}',
+                                    '{{ item.student.roll_number }}'
+                                )" style="
+                                    background-color: #25D366;
+                                    color: white;
+                                    padding: 10px 20px; /* Increased padding */
+                                    border: none;
+                                    border-radius: 25px;
+                                    cursor: pointer;
+                                    font-size: 0.9em;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center; /* Center horizontally */
+                                    margin-left: auto;
+                                    text-decoration: none;
+                                    transition: background-color 0.3s ease, transform 0.2s ease;
+                                    white-space: nowrap; /* Prevent text wrapping */
+                                ">
+                    <i class="fab fa-whatsapp" style="margin-right: 8px; font-size: 1.1em; color: white;"></i> WhatsApp
+                </button>
+                {% else %}
+                <span class="no-phone" style="color: var(--text-muted); font-size: 0.9em;">No phone number</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No students with pending fees.</p>
+    {% endif %}
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    function cleanPhoneNumber(phoneNumber) {
+        return phoneNumber.replace(/[^0-9]/g, ''); // Remove all non-digit characters
+    }
+
+    function showPhoneNumberSelection(phone1, phone2, studentName, pendingPeriods, pendingAmount, rollNumber) {
+        const feesInfoLink = `https://{{ request.get_host }}{% url 'fees_info' 0 %}`.replace('/0/', `/${rollNumber}/`);
+        let message = `Mohtaram ${studentName}, aapki pichli fees jo ke ${pendingPeriods} mahine ki ada karni baqi hai uski Total ₹${pendingAmount}. \nBaraye meharbani jald ada karen.
+
+${feesInfoLink}
+
+Thank you.`
+        let selectedNumber = null;
+        // Check if both phone numbers are available
+
+
+        if (phone1 && phone2 !== "None") { // Change this line
+            // Prompt user to choose a phone number
+            const choice = prompt(`Choose a phone number for ${studentName}:\n1. ${phone1}\n2. ${phone2}`);
+
+            // Validate user input
+            if (['1', '2'].includes(choice)) {
+                selectedNumber = choice === '1' ? phone1 : phone2;
+            } else {
+                alert("Invalid choice or cancelled.");
+                return;
+            }
+        } else {
+            // If only one phone number is available, use it
+            selectedNumber = phone1 || phone2;
+
+            // If no phone numbers are available, alert the user
+            if (!selectedNumber || selectedNumber === "None") { // Add check for "None" here too
+                alert("No phone numbers available for this student.");
+                return;
+            }
+        }
+        // Open WhatsApp link with selected phone number
+        if (selectedNumber) {
+            const whatsappLink = `https://wa.me/+91${selectedNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappLink, '_blank');
+        }
+    }
+</script>
+{% endblock scripts %}
