@@ -27,12 +27,14 @@ The application uses a single model: `Student`.
 - `path('', include('students.urls'))`: Includes all URLs from the `students` app at the root path.
 
 ### `students/urls.py`
-- `path('search/', views.search_student, name='search_student')`: Main entry point for searching students by roll number.
+- `path('search/', views.search_student, name='search_student')`: Main entry point for searching students by name or roll number.
 - `path('admission/', views.add_student, name='add_student')`: Page for admitting new students. (Note: URL changed from 'add/' to 'admission/').
 - `path('student/<int:roll_number>/', views.student_detail, name='student_detail')`: Displays and allows updates to a specific student's details.
 - `path('pending/', views.pending_fees_list, name='pending_fees_list')`: Lists students with overdue fees.
 - `path('due_soon/', views.due_soon_fees_list, name='due_soon_fees_list')`: Lists students whose fees are due within the next 7 days.
 - `path('dashboard/', views.dashboard, name='dashboard')`: Provides analytics and a fees status distribution chart.
+- `path('students/', views.student_list, name='student_list')`: Displays a list of students, typically as search results.
+
 
 ## Views (`students/views.py`)
 
@@ -47,9 +49,11 @@ The application uses a single model: `Student`.
     - **Returns:** `(pending_periods, months_per_period)` tuple.
 
 - **`search_student(request)`**:
-    - Handles GET/POST requests for searching students by `roll_number`.
+    - Handles GET/POST requests for searching students by `name` or `roll_number`.
     - Uses `SearchForm` for input validation.
-    - Redirects to `student_detail` if found, otherwise displays "Student not found." message.
+    - If one student is found, redirects to `student_detail`.
+    - If multiple students are found, displays them on the `student_list` page.
+    - If no student is found, displays a "Student not found." message.
 
 - **`add_student(request)`**:
     - Handles GET/POST requests for admitting new students.
@@ -83,17 +87,18 @@ The application uses a single model: `Student`.
     - `paid_till_date` uses a `DateInput` widget with `type='date'` for a calendar picker.
 
 - **`SearchForm`**:
-    - A simple `Form` with a single `IntegerField` for `roll_number` input.
+    - A simple `Form` with a single `CharField` for `query` input to search by name or roll number.
 
 ## Templates (`students/templates/students/`)
 All templates follow a consistent dark theme inspired by the Behance design, with Roboto font, Font Awesome icons, rounded corners, and a fixed bottom navigation bar.
 
-- **`search_student.html`**: Search input for roll number, links to other sections.
+- **`search_student.html`**: Search input for name or roll number, links to other sections.
 - **`add_student.html`**: Form for new student admission.
 - **`student_detail.html`**: Displays student info, form to update `paid_till_date`.
 - **`pending_fees_list.html`**: Lists pending students with calculated fees and WhatsApp buttons.
 - **`due_soon_fees_list.html`**: Lists students with fees due soon and WhatsApp buttons.
 - **`dashboard.html`**: Displays analytics cards in a 2x2 grid and a Chart.js donut chart for fees status distribution.
+- **`student_list.html`**: Displays a list of students, typically as search results. The page is styled with custom CSS to improve the appearance of the search results.
 
 ## Key Configurations (`fees_manager/settings.py`)
 - **`ALLOWED_HOSTS = ['*']`**: Set for development/local network testing. **MUST be changed for production.**
@@ -128,5 +133,5 @@ All templates follow a consistent dark theme inspired by the Behance design, wit
     - To access from other devices on the same network, find your computer's IP address (e.g., `ip a` on Linux/macOS, `ipconfig` on Windows) and navigate to `http://YOUR_IP_ADDRESS:8000/` in your browser.
 
 ## Debugging Notes
-- If Chart.js text (legend, title) on the Dashboard is black, it's likely a browser caching issue. Clear your browser's cache thoroughly.
+- If Chart.s text (legend, title) on the Dashboard is black, it's likely a browser caching issue. Clear your browser's cache thoroughly.
 - If `paid_till_date` logic seems off, verify your system's date and time, and ensure `TIME_ZONE` is correctly set in `settings.py`. Re-running `populate_students` after changing timezone settings is recommended.

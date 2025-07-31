@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from .models import Student, Payment
 from .forms import StudentForm, SearchForm, PaymentForm
 
-MONTHLY_FEE = 400
+MONTHLY_FEE = 0
 
 def user_login(request):
     if request.method == 'POST':
@@ -70,11 +70,16 @@ def search_student(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
         if form.is_valid():
-            roll_number = form.cleaned_data['roll_number']
-            try:
-                student = Student.objects.get(roll_number=roll_number)
-                return redirect('student_detail', roll_number=student.roll_number)
-            except Student.DoesNotExist:
+            query = form.cleaned_data['query']
+            students = Student.objects.filter(name__icontains=query)
+            if not students.exists() and query.isdigit():
+                students = Student.objects.filter(roll_number=query)
+            
+            if students.count() == 1:
+                return redirect('student_detail', roll_number=students.first().roll_number)
+            elif students.count() > 1:
+                return render(request, 'students/student_list.html', {'students': students, 'query': query})
+            else:
                 return render(request, 'students/search_student.html', {'form': form, 'message': 'Student not found.'})
     return render(request, 'students/search_student.html', {'form': form})
 

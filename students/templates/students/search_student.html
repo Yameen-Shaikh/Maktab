@@ -6,8 +6,8 @@
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_roll_number"><i class="fas fa-id-card"></i> Roll Number:</label>
-                <input type="number" name="roll_number" id="id_roll_number" required>
+                <label for="id_query"><i class="fas fa-search"></i> Search by Name or Roll Number:</label>
+                <input type="text" name="query" id="id_query" required>
             </div>
             <button type="submit"><i class="fas fa-search"></i> Search</button>
         </form>
