@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 
 class Student(models.Model):
     FEES_PERIOD_CHOICES = [
@@ -14,8 +15,8 @@ class Student(models.Model):
     phone_number2 = models.CharField(max_length=15, blank=True, null=True)
     student_class = models.SmallIntegerField()
     address = models.CharField(max_length=255, blank=True)
-    amount = models.IntegerField(null=False, blank=False, name='amount', default='')
-    paid_till_date = models.DateField(null=False, blank=False)
+    amount = models.SmallIntegerField(null=False, blank=False, name='amount', default=0)
+    paid_till_date = models.DateField(null=False, blank=False, default=date(1970, 1, 1))
     fees_period = models.CharField(max_length=20, choices=FEES_PERIOD_CHOICES, default='monthly')
 
     class Meta:
