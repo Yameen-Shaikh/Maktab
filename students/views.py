@@ -8,7 +8,6 @@ from django.contrib.auth import authenticate, login, logout
 from .models import Student, Payment
 from .forms import StudentForm, SearchForm, PaymentForm
 
-MONTHLY_FEE = 0
 
 def user_login(request):
     if request.method == 'POST':
@@ -29,6 +28,7 @@ def user_logout(request):
 def calculate_pending_periods(student, current_date):
     paid_till_date = student.paid_till_date
     fees_period_type = student.fees_period
+    monthly_fee = student.monthly_fee
 
     months_per_period = {
         'monthly': 1,
@@ -59,7 +59,7 @@ def calculate_pending_periods(student, current_date):
         pending_periods += 1
         current_period_start += relativedelta(months=months_per_period)
 
-    pending_amount = pending_periods * MONTHLY_FEE * months_per_period
+    pending_amount = pending_periods * monthly_fee * months_per_period
     total_pending_months_display = pending_periods * months_per_period
 
     return max(0, pending_periods), pending_amount, total_pending_months_display
@@ -101,7 +101,7 @@ def add_student(request):
 def student_detail(request, roll_number):
     student = get_object_or_404(Student, roll_number=roll_number)
     payments = student.payments.all().order_by('-payment_date')
-    
+        
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
         if payment_form.is_valid():
@@ -137,7 +137,7 @@ def student_detail(request, roll_number):
 @login_required
 def pending_fees_list(request):
     today = timezone.now().date()
-    all_pending_students = Student.objects.filter(paid_till_date__lt=today)
+    all_pending_students = Student.objects.filter(paid_till_date__lt=today).filter(monthly_fee__gt=0)
 
     students_with_pending_amount = []
     for student in all_pending_students:
@@ -160,6 +160,7 @@ def due_soon_fees_list(request):
 def fees_info(request, roll_number):
     student = get_object_or_404(Student, roll_number=roll_number)
     today = timezone.now().date()
+    monthly_fee = student.monthly_fee
     
     fee_status = "Paid Up"
     fee_amount = 0
@@ -198,7 +199,7 @@ def fees_info(request, roll_number):
                 'half_yearly': 6,
                 'yearly': 12,
             }[student.fees_period]
-            fee_amount = MONTHLY_FEE * months_per_period
+            fee_amount = monthly_fee * months_per_period
 
     payments = student.payments.all().order_by('-payment_date')
 
