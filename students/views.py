@@ -83,7 +83,10 @@ def search_student(request):
                 return render(request, 'students/search_student.html', {'form': form, 'message': 'Student not found.'})
     return render(request, 'students/search_student.html', {'form': form})
 
-@login_required
+# @login_required 
+# Intentially kept this route unprotected 
+# So that parents can admit thier kids
+# Without authorization
 def add_student(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
