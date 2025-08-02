@@ -45,6 +45,7 @@ class Command(BaseCommand):
                             phone_number2=phone_number2,
                             student_class=default_class,
                             paid_till_date=default_paid_till_date,
+                            monthly_fee = 400,
                             fees_period='quarterly',
                         )
                         imported_students.add(student_key)
