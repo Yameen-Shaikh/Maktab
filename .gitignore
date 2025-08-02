@@ -1,0 +1,32 @@
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# Virtual Environment
+.env/
+venv/
+env/
+
+# Database files
+db.sqlite3
+
+# Log files
+*.log
+
+# Sensitive configuration files
+local_settings.py
+
+# IDE/Editor-specific files
+.idea/
+.vscode/
+
+# Operating system specific files
+.DS_Store
+Thumbs.db
+
+# Test coverage files
+.coverage
+
+# Build artifacts
+.tox/
+.eggs/
