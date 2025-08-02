@@ -27,6 +27,7 @@ class Command(BaseCommand):
                 for row in reader:
                     student_name = row['Student Name'].strip()
                     address = row['Address'].strip()
+                    monthly_fees_amount = row['Monthly Fees'].strip() if row['Monthly Fees'].strip() else 400
                     phone_number1 = row['Contact Number 1'].strip() if row['Contact Number 1'].strip() else None
                     phone_number2 = row['Contact Number 2'].strip() if row['Contact Number 2'].strip() else None
 
@@ -45,7 +46,7 @@ class Command(BaseCommand):
                             phone_number2=phone_number2,
                             student_class=default_class,
                             paid_till_date=default_paid_till_date,
-                            monthly_fee = 400,
+                            monthly_fee = monthly_fees_amount,
                             fees_period='quarterly',
                         )
                         imported_students.add(student_key)
