@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('roll_number', 'name', 'student_class', 'paid_till_date', 'fees_period')
+    list_display = ('roll_number', 'name', 'student_class', 'paid_till_date', 'fees_period', 'monthly_fee')
     search_fields = ('name', 'roll_number')
     list_filter = ('student_class', 'fees_period')
 
