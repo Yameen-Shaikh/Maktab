@@ -1,0 +1,19 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+    <div class="card">
+        <h1>Search</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_query"><i class="fas fa-search"></i> Search by Name or Roll Number:</label>
+                <input type="text" name="query" id="id_query" required>
+            </div>
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+        </form>
+
+        {% if message %}
+            <p class="message">{{ message }}</p>
+        {% endif %}
+    </div>
+{% endblock content %}

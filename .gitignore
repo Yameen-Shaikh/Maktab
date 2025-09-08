@@ -1,0 +1,33 @@
+# Virtual Environment
+venv/
+ENV/
+env/
+.env
+
+# Django specific
+*.log
+db.sqlite3
+media/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Static files (if you run collectstatic)
+staticfiles/
